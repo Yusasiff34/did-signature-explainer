@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DID Signature Explainer</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0b1020;
+      color: #eef2ff;
+      font-family: system-ui, sans-serif;
+    }
+
+    main {
+      max-width: 760px;
+      margin: auto;
+      padding: 32px 18px;
+    }
+
+    .card {
+      background: #141b31;
+      border: 1px solid #293453;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 18px 0;
+    }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #394667;
+      background: #0d1428;
+      color: white;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .result {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #0d1428;
+    }
+
+    code {
+      overflow-wrap: anywhere;
+    }
+
+    li {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<main>
+
+  <h1>DID Signature Explainer</h1>
+
+  <p>
+    Learn what a cryptographic signature proves — and what it does not prove.
+  </p>
+
+  <section class="card">
+
+    <h2>What does a signature prove?</h2>
+
+    <ul>
+      <li>
+        <strong>Control of a key:</strong>
+        A valid signature demonstrates access to the corresponding private key.
+      </li>
+
+      <li>
+        <strong>Message integrity:</strong>
+        Changing the signed message makes verification fail.
+      </li>
+
+      <li>
+        <strong>Not automatically real-world identity:</strong>
+        A signature alone does not prove who the key holder is.
+      </li>
+    </ul>
+
+  </section>
+
+  <section class="card">
+
+    <h2>Try the concept</h2>
+
+    <label>
+      Message
+
+      <textarea id="message" rows="4">I control this key and signed this message.</textarea>
+    </label>
+
+    <button id="hash">
+      Create SHA-256 fingerprint
+    </button>
+
+    <div class="result" id="result">
+      The fingerprint will appear here.
+    </div>
+
+  </section>
+
+  <section class="card">
+
+    <h2>Simple mental model</h2>
+
+    <p>
+      <code>DID → public key → signature → verifiable claim</code>
+    </p>
+
+    <p>
+      A verifier can check the cryptographic relationship without needing
+      access to the private key.
+    </p>
+
+  </section>
+
+  <footer>
+    Created by Yusuf Babajide Yusuf · Technocore contribution · inspired by @flop_labs
+  </footer>
+
+</main>
+
+<script>
+
+const message = document.getElementById("message");
+const result = document.getElementById("result");
+
+document.getElementById("hash").addEventListener("click", async () => {
+
+  const bytes = new TextEncoder().encode(message.value);
+
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+
+  const hex = [...new Uint8Array(digest)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  result.innerHTML =
+    "<strong>SHA-256:</strong><br>" +
+    "<code>" + hex + "</code><br><br>" +
+    "Changing even one character produces a different fingerprint.";
+
+});
+
+</script>
+
+</body>
+</html>
